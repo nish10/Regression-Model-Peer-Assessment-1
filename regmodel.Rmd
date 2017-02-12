@@ -29,7 +29,7 @@ summary(mtcars)
 ```
 
 
-<img src="mtcars.png" alt="mtcars help page"  width="4200" height="4200">
+<img src="mtcars.png" alt="mtcars help page" >
 
 
 ## Analysis
@@ -123,7 +123,7 @@ The p-values of all the predictors `summary(fit3)` also shows rejects the null h
 ## Pairs Plot
 
 
-<img src="Pairsplot.png" alt="pairs"  width="4200" height="4200">
+<img src="Pairsplot.png" alt="pairs"  >
 
 
 ## Conclusion
