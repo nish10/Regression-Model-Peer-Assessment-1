@@ -1,0 +1,175 @@
+---
+title: "Regression Model: Peer Assessment 1"
+author: Nishant Kumar
+date: February 12, 2017
+output: 
+  html_document:
+    keep_md: true
+---
+
+# **Is an automatic or manual transmission better for MPG (Miles/(US) gallon) : MOTOR TREND**
+
+## Instructions
+
+Looking at a data set of a collection of cars, we are interested in exploring the relationship between a set of variables and miles per gallon (MPG) (outcome).
+
+First look at **mtcars** data :
+
+
+```{r}
+library(datasets)
+data(mtcars)
+head(mtcars)
+summary(mtcars)
+```
+
+
+```{r}
+?mtcars
+```
+
+
+<img src="mtcars.png" alt="mtcars help page"  width="4200" height="4200">
+
+
+## Analysis
+
+
+Here we apply **Best Subset Selection** approach on **mtcars** data as total no. of variables is 11 which is less than 40. We want to find relationship between set of variables (predictors) on which mpg (outcome) depends the most.
+We will use `regsubsets()` function which performs best selection by identifying the best model that contains a given no. of predictors, where *best* is quantified using RSS.
+
+
+```{r}
+library(leaps)
+reg.best<- regsubsets(mpg~.,mtcars,nvmax=10)
+summary(reg.best)
+```
+
+
+An asterisk indicates that a given variable is included in the corresponding model. 
+
+
+```{r}
+reg.summary<- summary(reg.best)
+names(reg.summary)
+```
+
+
+The `summary()` function returns *R<sup>2</sup>*, *RSS*, *adjusted R<sup>2</sup>*, *C<sub>p</sub>* and *BIC*.
+
+
+```{r}
+reg.summary$rsq
+```
+
+
+For instance, we see that the *R<sup>2</sup>* statistic increases from 75% when only one variable is included in the model, to almost 87% when all variables are included. As expected, the *R<sup>2</sup>* statistic increasees monotonically as more variables are included.
+
+
+Plotting *RSS*, *C<sub>p</sub>*, *adjusted R<sup>2</sup>* and *BIC* for all models at  once will help us to decide which model to select. We use `which.max()` function to identify the no. variables for which the given statistic i.e. *adjusted R<sup>2</sup>* is max at, here at `r which.max(reg.summary$adjr2)`. Similarly we use `which.min()` function to indicate the models with smallest statistics for *C<sub>p</sub>* and *BIC*, which is here `r which.min(reg.summary$cp)` and `r which.min(reg.summary$bic)` respectively.
+
+
+```{r}
+par(mfrow=c(2,2))
+plot(reg.summary$rss, xlab="Number of Variables ", ylab="RSS", type='b', pch=20)
+plot(reg.summary$adjr2, xlab="Number of Variables ", ylab="Adjusted RSq", type='b', pch=20)
+points(which.max(reg.summary$adjr2), reg.summary$adjr2[which.max(reg.summary$adjr2)], col="red", cex=2, pch =20)
+plot(reg.summary$cp, xlab="Number of Variables ",ylab="Cp",type='b',pch=20)
+points (which.min(reg.summary$cp), reg.summary$cp[which.min(reg.summary$cp)], col ="red", cex=2, pch =20)
+plot(reg.summary$bic, xlab="Number of Variables ",ylab="BIC", type='b', pch=20)
+points(which.min(reg.summary$bic), reg.summary$bic[which.min(reg.summary$bic)], col="red", cex=2, pch =20)
+```
+
+
+Now we display the selected variables for the best model with given no. of predictors, ranked according to the *BIC*, *C<sub>p</sub>*, *adjusted R<sup>2</sup>*, or *AIC*. The top row of each plot contains a black sqaure for each variable selected according to the optimal model associated with that statistics. For instance, we see that the model with lowest *BIC* is the three-varible model that contains only `wt`, `qsec` and `am` predictors.
+
+
+```{r}
+plot(reg.best ,scale="r2")
+plot(reg.best ,scale="adjr2")
+plot(reg.best ,scale="Cp")
+plot(reg.best,scale='bic')
+```
+
+
+```{r}
+coef(reg.best ,3)
+```
+
+
+Now doing the **anova** analysis for the above model.
+
+
+```{r}
+attach(mtcars)
+fit1<- lm(mpg ~ wt, mtcars)
+fit2<- lm(mpg ~ wt + qsec ,mtcars)
+fit3<- lm(mpg ~ wt + qsec + am, mtcars)
+anova(fit1, fit2, fit3)
+```
+
+
+From above anova analysis, we can see that the p-values for *fit2* and *fit3* are less than the various significant significance level(alpha), hence rejecting the null hypothesis that all the three models *fit1*, *fit2* and *fit3* fits the data equally well against the alternate hypothesis *fit3* i.e. full model is superior.
+
+
+```{r}
+summary(fit3)
+```
+
+
+The p-values of all the predictors `summary(fit3)` also shows rejects the null hypothesis that the coefficients of corresponding predictor is 0.
+
+
+## Pairs Plot
+
+
+<img src="Pairsplot.png" alt="pairs"  width="4200" height="4200">
+
+
+## Conclusion
+
+
+- `am` variable represents **Transmission (0 = automatic, 1 = manual)**. Keeping all the other predictors constant, on average there will be an increase of 2.9358 Miles/(US) gallon for manual transmission over automatic transmission.
+- `qsec` variable represents **1/4 mile time**. Keeping all other predictors constant there will be an increase of 1.2259 Miles/(US) gallon with increase in `qsec` by one unit.
+- `wt` variable represents **Weight (1000 lbs)**. Keeping all other predictors constant there will be an decrease of 3.9165 Miles/(US) gallon with increase of `wt` by one unit.
+
+
+## Residual Plot
+
+
+```{r}
+plot(fit3)
+```
+
+
+- The points in the Residuals vs. Fitted plot are randomly scattered on the plot that verifies the independence condition and also Constant Variance of Error Terms rejecting the non-constant variances in the errors, or heteroscedasticity from the plot.
+
+
+## Quantify the MPG difference between automatic and manual transmissions
+
+
+```{r}
+boxplot(mpg~am,col=c(rgb(0,1,0),rgb(1,0,1)))
+legend("topleft", inset=.05, title="Transmission Type", c("0 = automatic","1 = manual"), fill=c(rgb(0,1,0),rgb(1,0,1)))
+title(xlab="Tansmission Type",ylab="Miles/(US) gallon", main="Comparison: automatic or manual transmission better for MPG ")
+```
+
+
+**Simple Linear Regression Fit lm(mpg ~ am, mtcars)**
+```{r}
+fit<- lm(mpg ~ am, mtcars)
+summary(fit)
+```
+
+
+## Conclusion
+
+- From the above regression model we know that it is of the form `mpg = beta0 + beta1*am`. As `am` variable represents *Transmission (0 = automatic, 1 = manual)* the Estimate column of `summary(fit)` shows  beta0 / intercept coefficient which is mean MPG for cars with automatic transmissions(am = 0) i.e. 17.147 and  beta1 / am coefficient is which the mean increase in MPG i.e. (17.147 + 7.248 = `r 17.147 + 7.248`) for cars with manual transmissions (am = 1) over automatic transmissions.
+
+
+
+```
+Hence concluded that cars with manual transmissions has better mpg than those of automatic transmissions.
+```
+
+
