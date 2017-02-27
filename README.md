@@ -15,3 +15,5 @@ You work for Motor Trend, a magazine about the automobile industry. Looking at a
 6. Did the student quantify the uncertainty in their conclusions and/or perform an inference correctly?
 7. Was the report done in Rmd (knitr)?
 8. Did the report include an executive summary?
+
+## **<a href ='https://nish10.github.io/Regression-Model-Peer-Assessment-1/regmodel.html'> Click on this link to see my output </a>**
