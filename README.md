@@ -1,3 +1,5 @@
+## **<a href ='https://nish10.github.io/Regression-Model-Peer-Assessment-1/regmodel.html'> Click on this link to see my output </a>**
+
 ## Instructions
 
 You work for Motor Trend, a magazine about the automobile industry. Looking at a data set (`mtcars`) a collection of cars, they are interested in exploring the relationship between a set of variables and miles per gallon (MPG) (outcome). They are particularly interested in the following two questions:
@@ -16,4 +18,4 @@ You work for Motor Trend, a magazine about the automobile industry. Looking at a
 7. Was the report done in Rmd (knitr)?
 8. Did the report include an executive summary?
 
-## **<a href ='https://nish10.github.io/Regression-Model-Peer-Assessment-1/regmodel.html'> Click on this link to see my output </a>**
+
